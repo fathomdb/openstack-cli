@@ -26,7 +26,8 @@ public class ServerFormatter extends SimpleFormatter<Server> {
 		OpenstackService service = OpenstackCliContext.get()
 				.getOpenstackService();
 
-		Flavor flavor = service.resolveFlavor(server.getFlavor());
+		// Flavor flavor = service.resolveFlavor(server.getFlavor());
+		Flavor flavor = server.getFlavor();
 		String flavorName = null;
 		if (flavor != null) {
 			flavorName = flavor.getName();

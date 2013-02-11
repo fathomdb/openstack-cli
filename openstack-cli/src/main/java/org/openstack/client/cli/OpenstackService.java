@@ -16,7 +16,6 @@ import org.openstack.nova.api.extensions.SecurityGroupsExtension;
 import org.openstack.nova.api.extensions.SecurityGroupsExtension.DeleteSecurityGroup;
 import org.openstack.nova.api.extensions.SecurityGroupsExtension.ListSecurityGroups;
 import org.openstack.nova.model.Extensions;
-import org.openstack.nova.model.Flavor;
 import org.openstack.nova.model.Flavors;
 import org.openstack.nova.model.FloatingIps;
 import org.openstack.nova.model.Images;
@@ -132,8 +131,7 @@ public class OpenstackService {
 		}
 	}
 
-	public Flavor resolveFlavor(Flavor flavor) {
-		// TODO Auto-generated method stub
-		return null;
+	public WellKnownCloud getWellKnownCloud() {
+		return session.getWellKnownCloud();
 	}
 }

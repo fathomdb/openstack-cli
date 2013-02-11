@@ -68,4 +68,8 @@ public class OpenstackCliContext extends CliContextBase {
 		return cache;
 	}
 
+	public WellKnownCloud getWellKnownCloud() {
+		return getOpenstackService().getWellKnownCloud();
+	}
+
 }

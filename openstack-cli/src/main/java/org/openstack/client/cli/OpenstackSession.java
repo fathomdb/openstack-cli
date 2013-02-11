@@ -79,4 +79,17 @@ public class OpenstackSession {
 		return access != null;
 	}
 
+	public WellKnownCloud getWellKnownCloud() {
+		String authUrl = credentials.getAuthUrl();
+		authUrl = authUrl.toLowerCase();
+		authUrl = authUrl.trim();
+		authUrl += "/";
+
+		if (authUrl.startsWith("https://identity.api.rackspacecloud.com/")) {
+			return WellKnownCloud.RACKSPACE_CLOUD;
+		}
+
+		return null;
+	}
+
 }
