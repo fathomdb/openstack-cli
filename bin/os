@@ -1,0 +1,126 @@
+#!/bin/bash
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
+SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+BASE_DIR=${SCRIPT_DIR}/../
+
+DEFAULT_FORMAT=""
+
+parse_arguments () {
+  while getopts ":pq:" optname
+    do
+      case "$optname" in
+        "p")
+          echo "Option $optname is specified"
+          ;;
+        "q")
+          echo "Option $optname has value $OPTARG"
+          ;;
+        "?")
+          echo "Unknown option $OPTARG"
+          ;;
+        ":")
+          echo "No argument value for option $OPTARG"
+          ;;
+        *)
+        # Should not occur
+          echo "Unknown error while processing options"
+          ;;
+      esac
+    done
+  return $OPTIND
+}
+
+do_action() {
+	local verb=$1
+	shift
+
+	case "$verb" in
+        "browser")
+          x-www-browser $@
+          ;;
+        *)
+          echo "Unknown action: ${verb}"
+          exit 1
+          ;;
+    esac
+}
+
+optinfo=$(parse_arguments "$@")
+#argstart=$?
+shift $((OPTIND-1))
+
+set -e
+
+# Intelligent selection of default format based on command
+# i.e. run as an action if it's an action and user didn't override
+if [[ "$1" == "run-vnc" ]]; then
+	DEFAULT_FORMAT="action"
+fi
+
+if [[ "$1" == "create-image" || "$1" == "create-sshkey" ]]; then
+	USE_NAILGUN=0
+fi
+
+# By default, we won't use nailgun (for easier setup)
+if [[ "${USE_NAILGUN}" == "" ]]; then
+	USE_NAILGUN=0
+fi
+
+if [[ "$DEFAULT_FORMAT" == "" ]]; then
+	DEFAULT_FORMAT="raw"
+fi
+
+if [[ "${USE_NAILGUN}" == "1" ]]; then
+	NAILGUN=ng-nailgun
+	if ! builtin type -p ${NAILGUN} &>/dev/null; then
+		NAILGUN=ng
+		if ! builtin type -p ${NAILGUN} &>/dev/null; then
+			NAILGUN=${BASE_DIR}/../nailgun/ng
+			if ! builtin type -p ${NAILGUN} &>/dev/null; then
+				echo "${NAILGUN} not found; try sudo apt-get install nailgun"
+				exit 1
+			fi
+		fi
+	fi
+fi
+
+if [[ "$OPENSTACK_CONFIG" == "" ]]; then
+	OPENSTACK_CONFIG=openstack
+fi
+
+if [[ "$FORMAT" == "" ]]; then
+	FORMAT=${DEFAULT_FORMAT}
+fi
+
+if [[ "$CONFIG_FILE" == "" ]]; then
+	CONFIG_FILE=~/.credentials/${OPENSTACK_CONFIG}
+fi
+
+if [[ "${USE_NAILGUN}" == "1" ]]; then
+	export NAILGUN_PORT=2102
+
+	cmd=(${NAILGUN} org.openstack.client.cli.OpenstackCli)
+	args=(--format "${FORMAT}" --config -)
+else
+	cmd=(java -jar ${SCRIPT_DIR}/openstack-cli-standalone.jar)
+	args=(--format "${FORMAT}" --config "${CONFIG_FILE}")
+fi
+
+if [[ "${FORMAT}" == "action" ]]; then
+	if [[ "${USE_NAILGUN}" == "1" ]]; then
+		action=`${cmd[@]} ${args[@]} "${@}" < ${CONFIG_FILE}`
+	else
+		action=`${cmd[@]} ${args[@]} "${@}"`
+	fi
+	do_action ${action}
+else
+	if [[ "${USE_NAILGUN}" == "1" ]]; then
+		${cmd[@]} ${args[@]} "${@}" < ${CONFIG_FILE}
+	else
+		${cmd[@]} ${args[@]} "${@}"
+	fi
+fi
+
