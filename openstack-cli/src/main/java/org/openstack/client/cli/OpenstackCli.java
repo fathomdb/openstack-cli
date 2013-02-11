@@ -1,5 +1,8 @@
 package org.openstack.client.cli;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.kohsuke.args4j.CmdLineParser;
 import org.openstack.client.cli.commands.OpenstackCliCommandRegistry;
 import org.openstack.client.cli.model.ContainerName;
@@ -26,8 +29,10 @@ public class OpenstackCli extends CliBase {
 		}
 
 		@Override
-		public CliContext buildContext(CommandRegistry commandRegistry, CliOptions options) throws Exception {
-			return new OpenstackCliContext((OpenstackCliCommandRegistry) commandRegistry,
+		public CliContext buildContext(CommandRegistry commandRegistry,
+				CliOptions options) throws Exception {
+			return new OpenstackCliContext(
+					(OpenstackCliCommandRegistry) commandRegistry,
 					(ConfigurationOptions) options);
 		}
 
@@ -38,20 +43,29 @@ public class OpenstackCli extends CliBase {
 	}
 
 	static {
-		CmdLineParser.registerHandler(SecurityGroupName.class, StringWrapperOptionHandler.class);
-		CmdLineParser.registerHandler(ImageName.class, StringWrapperOptionHandler.class);
-		CmdLineParser.registerHandler(InstanceName.class, StringWrapperOptionHandler.class);
-		CmdLineParser.registerHandler(FlavorName.class, StringWrapperOptionHandler.class);
+		CmdLineParser.registerHandler(SecurityGroupName.class,
+				StringWrapperOptionHandler.class);
+		CmdLineParser.registerHandler(ImageName.class,
+				StringWrapperOptionHandler.class);
+		CmdLineParser.registerHandler(InstanceName.class,
+				StringWrapperOptionHandler.class);
+		CmdLineParser.registerHandler(FlavorName.class,
+				StringWrapperOptionHandler.class);
 
-		CmdLineParser.registerHandler(GlanceImageName.class, StringWrapperOptionHandler.class);
+		CmdLineParser.registerHandler(GlanceImageName.class,
+				StringWrapperOptionHandler.class);
 
-		CmdLineParser.registerHandler(ContainerName.class, StringWrapperOptionHandler.class);
-		CmdLineParser.registerHandler(StoragePath.class, StringWrapperOptionHandler.class);
+		CmdLineParser.registerHandler(ContainerName.class,
+				StringWrapperOptionHandler.class);
+		CmdLineParser.registerHandler(StoragePath.class,
+				StringWrapperOptionHandler.class);
 
 		init(new OpenstackCliHandler());
 	}
 
 	public static void main(String[] args) {
+		Logger.getLogger("openstack").setLevel(Level.WARNING);
+
 		CliBase.main(args);
 	}
 

@@ -12,7 +12,6 @@ import org.kohsuke.args4j.Option;
 import com.fathomdb.cli.CliOptions;
 import com.fathomdb.io.IoUtils;
 import com.fathomdb.io.NoCloseInputStream;
-import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 
 public class ConfigurationOptions extends CliOptions {
