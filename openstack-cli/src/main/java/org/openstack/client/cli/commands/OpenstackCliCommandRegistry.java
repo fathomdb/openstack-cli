@@ -17,6 +17,11 @@ public class OpenstackCliCommandRegistry extends CommandRegistryBase {
 
 		Set<Class<? extends OpenstackCliCommandRunnerBase>> subTypes = reflections
 				.getSubTypesOf(OpenstackCliCommandRunnerBase.class);
+
+		if (subTypes == null || subTypes.isEmpty()) {
+			throw new IllegalStateException("Unable to load list of commands");
+		}
+
 		discoverCommands(subTypes);
 
 		// discoverCommands(getClass().getPackage());
