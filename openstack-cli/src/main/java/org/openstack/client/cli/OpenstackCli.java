@@ -64,9 +64,13 @@ public class OpenstackCli extends CliBase {
 	}
 
 	public static void main(String[] args) {
-		Logger.getLogger("openstack").setLevel(Level.WARNING);
+		try {
+			Logger.getLogger("openstack").setLevel(Level.WARNING);
 
-		CliBase.main(args);
+			CliBase.main(args);
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 	}
 
 	public static void nailMain(NGContext nailgunContext) {
