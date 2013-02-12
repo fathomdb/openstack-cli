@@ -1,8 +1,8 @@
 package org.openstack.client.cli.output;
 
-import java.util.Set;
+import java.util.Collection;
 
-import org.reflections.Reflections;
+import org.openstack.client.cli.commands.ReflectionDiscovery;
 
 import com.fathomdb.cli.formatter.FormatterRegistryBase;
 import com.fathomdb.cli.formatter.SimpleFormatter;
@@ -12,11 +12,11 @@ public class OpenstackCliFormatterRegistry extends FormatterRegistryBase {
 	public OpenstackCliFormatterRegistry() {
 		addDefaultFormatters();
 
-		Reflections reflections = Reflections.collect();
+		ReflectionDiscovery discovery = new ReflectionDiscovery();
 		// isProduction() ? Reflections.collect() : new
 		// Reflections(getClass().getPackage().getName());
 
-		Set<Class<? extends SimpleFormatter>> subTypes = reflections
+		Collection<Class<? extends SimpleFormatter>> subTypes = discovery
 				.getSubTypesOf(SimpleFormatter.class);
 		discoverFormatters(subTypes);
 
