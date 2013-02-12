@@ -14,10 +14,17 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.openstack>2.0.0-SNAPSHOT</version.openstack>
+		<version.reflections>0.9.8</version.reflections>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>${version.reflections}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.openstack</groupId>
 				<artifactId>keystone-client</artifactId>
