@@ -22,7 +22,7 @@ public class ContainerPropertiesFormatter extends
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
 		ContainerFormatter.putProperties(o.getContainer(), values);
-		values.put("price", Formatters.formatPrice(o.getPrice()));
+		// values.put("price", Formatters.formatPrice(o.getPrice()));
 
 		sink.outputRow(values);
 	}
