@@ -3,7 +3,6 @@ package org.openstack.client.cli.commands;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -13,7 +12,6 @@ import org.openstack.swift.SwiftClient;
 import org.openstack.swift.api.ListObjects;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ListFiles extends OpenstackCliCommandRunnerBase {
@@ -33,9 +31,8 @@ public class ListFiles extends OpenstackCliCommandRunnerBase {
 
 		FileIterator iterator = new FileIterator(client, containerName,
 				objectPath, null);
-		List<org.openstack.swift.model.Object> files = Lists
-				.newArrayList(iterator);
-		return files;
+
+		return IterableOnce.build(iterator);
 	}
 
 	class FileIterator implements Iterator<org.openstack.swift.model.Object> {
