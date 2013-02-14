@@ -1,9 +1,13 @@
 package org.openstack.client.cli;
 
+import java.io.Serializable;
+
 import org.openstack.keystone.model.Authentication;
 import org.openstack.keystone.model.Authentication.PasswordCredentials;
 
-public class OpenstackCredentials {
+public class OpenstackCredentials implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private final String authUrl;
 	private final String username;

@@ -12,6 +12,7 @@ import org.kohsuke.args4j.Option;
 import com.fathomdb.cli.CliOptions;
 import com.fathomdb.io.IoUtils;
 import com.fathomdb.io.NoCloseInputStream;
+import com.google.common.base.Strings;
 import com.google.common.io.Closeables;
 
 public class ConfigurationOptions extends CliOptions {
@@ -95,10 +96,28 @@ public class ConfigurationOptions extends CliOptions {
 		return service;
 	}
 
-	static final SessionCache sessionCache = new SessionCache();
+	static final SessionCache inMemorySessionCache = new InMemorySessionCache();
 
 	private OpenstackService buildService(OpenstackSessionInfo sessionInfo) {
-		OpenstackSession session = sessionCache.get(sessionInfo);
+		OpenstackSession session = null;
+		if (isServerMode()) {
+			session = inMemorySessionCache.get(sessionInfo);
+		} else {
+			String home = System.getProperty("user.home");
+			if (!Strings.isNullOrEmpty(home)) {
+				File homeDir = new File(home);
+				File cacheDir = new File(homeDir, ".credentials/cache");
+				cacheDir.mkdirs();
+
+				SessionCache cache = new OnDiskSessionCache(cacheDir);
+				session = cache.get(sessionInfo);
+			}
+		}
+
+		if (session == null) {
+			session = sessionInfo.buildSession();
+		}
+
 		return new OpenstackService(session);
 	}
 }

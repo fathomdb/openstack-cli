@@ -1,5 +1,7 @@
 package org.openstack.client.cli;
 
+import com.fathomdb.hash.Md5Hash;
+
 public class OpenstackSessionInfo {
 	final boolean debug;
 	final String username;
@@ -15,6 +17,12 @@ public class OpenstackSessionInfo {
 		this.password = password;
 		this.tenantId = tenantId;
 		this.debug = debug;
+	}
+
+	public String getUniqueId() {
+		Md5Hash.Hasher hasher = new Md5Hash.Hasher();
+		Md5Hash hash = hasher.hash(authUrl + ":" + username + ":" + tenantId);
+		return hash.toHex();
 	}
 
 	public OpenstackSession buildSession() {
