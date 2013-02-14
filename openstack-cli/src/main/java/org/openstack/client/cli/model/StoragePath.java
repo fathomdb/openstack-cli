@@ -4,7 +4,9 @@ import javax.ws.rs.core.Response;
 
 import org.openstack.client.cli.autocomplete.StoragePathAutoCompleter;
 import org.openstack.swift.SwiftClient;
+import org.openstack.swift.api.DownloadObject;
 import org.openstack.swift.api.ShowObject;
+import org.openstack.swift.model.ObjectDownload;
 
 import com.fathomdb.cli.StringWrapper;
 import com.fathomdb.cli.autocomplete.HasAutoCompletor;
@@ -29,7 +31,7 @@ public class StoragePath extends StringWrapper {
 		return joined;
 	}
 
-	public Response getResource(SwiftClient client) {
+	public Response getResourceHead(SwiftClient client) {
 		String containerName = getContainer();
 		String objectPath = getObjectPath();
 		if (containerName == null || objectPath == null) {
@@ -38,6 +40,19 @@ public class StoragePath extends StringWrapper {
 
 		ShowObject showObject = new ShowObject(containerName, objectPath);
 		Response response = client.execute(showObject);
+		return response;
+	}
+
+	public ObjectDownload downloadObject(SwiftClient client) {
+		String containerName = getContainer();
+		String objectPath = getObjectPath();
+		if (containerName == null || objectPath == null) {
+			throw new IllegalArgumentException("Cannot parse: " + getKey());
+		}
+
+		DownloadObject showObject = new DownloadObject(containerName,
+				objectPath);
+		ObjectDownload response = client.execute(showObject);
 		return response;
 	}
 
