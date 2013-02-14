@@ -2,6 +2,7 @@ package org.openstack.client.cli.output;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.openstack.nova.model.Image;
@@ -26,15 +27,18 @@ public class ImageFormatter extends SimpleFormatter<Image> {
 		// values.put("server", o.get.formatAddresses(o.getAddresses()));
 
 		StringBuilder sb = new StringBuilder();
-		for (Entry<String, String> item : o.getMetadata().entrySet()) {
-			if (sb.length() != 0) {
-				sb.append(", ");
+		Map<String, String> metadata = o.getMetadata();
+		if (metadata != null) {
+			for (Entry<String, String> item : metadata.entrySet()) {
+				if (sb.length() != 0) {
+					sb.append(", ");
+				}
+				String value = item.getValue();
+				if (value != null) {
+					value = value.trim();
+				}
+				sb.append(item.getKey() + "=" + value);
 			}
-			String value = item.getValue();
-			if (value != null) {
-				value = value.trim();
-			}
-			sb.append(item.getKey() + "=" + value);
 		}
 
 		values.put("metadata", sb.toString());
