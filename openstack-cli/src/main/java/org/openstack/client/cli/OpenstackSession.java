@@ -1,13 +1,11 @@
 package org.openstack.client.cli;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.List;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectReader;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.openstack.glance.GlanceClient;
 import org.openstack.keystone.KeystoneClient;
 import org.openstack.keystone.api.Authenticate;
@@ -19,11 +17,8 @@ import org.openstack.nova.NovaClient;
 import org.openstack.swift.SwiftClient;
 
 import com.google.common.base.Strings;
-import com.google.common.io.Closeables;
 
-public class OpenstackSession implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class OpenstackSession {
 	private Access access;
 	private OpenstackCredentials credentials;
 
@@ -104,24 +99,41 @@ public class OpenstackSession implements Serializable {
 	}
 
 	public byte[] serialize() throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(this);
-		oos.close();
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectWriter writer = mapper.writer();
+		byte[] data = writer.writeValueAsBytes(access);
 
-		return baos.toByteArray();
+		return data;
+
+		// ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		// ObjectOutputStream oos = new ObjectOutputStream(baos);
+		// oos.writeObject(this);
+		// oos.close();
+		//
+		// return baos.toByteArray();
 	}
 
-	public static OpenstackSession deserialize(byte[] data) throws IOException {
-		ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		ObjectInputStream ois = null;
-		try {
-			ois = new ObjectInputStream(bais);
-			return (OpenstackSession) ois.readObject();
-		} catch (ClassNotFoundException e) {
-			throw new IOException("Error deserializing data", e);
-		} finally {
-			Closeables.closeQuietly(ois);
-		}
+	public static OpenstackSession deserialize(
+			OpenstackSessionInfo sessionInfo, byte[] data) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectReader reader = mapper.reader(Access.class);
+		Access access = reader.readValue(data);
+
+		OpenstackSession session = new OpenstackSession();
+		session.access = access;
+		session.credentials = sessionInfo.getCredentials();
+
+		return session;
+
+		// ByteArrayInputStream bais = new ByteArrayInputStream(data);
+		// ObjectInputStream ois = null;
+		// try {
+		// ois = new ObjectInputStream(bais);
+		// return (OpenstackSession) ois.readObject();
+		// } catch (ClassNotFoundException e) {
+		// throw new IOException("Error deserializing data", e);
+		// } finally {
+		// Closeables.closeQuietly(ois);
+		// }
 	}
 }

@@ -24,11 +24,13 @@ public class OnDiskSessionCache implements SessionCache {
 
 		OpenstackSession session = null;
 
+		// TODO: Encrypt with the password
+
 		File sessionFile = new File(base, hash);
 		if (sessionFile.exists()) {
 			try {
 				byte[] data = Files.toByteArray(sessionFile);
-				session = OpenstackSession.deserialize(data);
+				session = OpenstackSession.deserialize(sessionInfo, data);
 			} catch (IOException e) {
 				// Ignore
 				log.debug("Error reading saved session file", e);

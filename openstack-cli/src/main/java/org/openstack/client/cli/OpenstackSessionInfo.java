@@ -34,9 +34,7 @@ public class OpenstackSessionInfo {
 		// session.setLinkResolver(new CachingLinkResolver(session));
 
 		if (!session.isAuthenticated()) {
-			OpenstackCredentials credentials = new OpenstackCredentials(
-					authUrl, username, password, tenantId);
-			session.authenticate(credentials, true);
+			session.authenticate(getCredentials(), true);
 		}
 
 		return session;
@@ -101,5 +99,11 @@ public class OpenstackSessionInfo {
 			return false;
 		}
 		return true;
+	}
+
+	public OpenstackCredentials getCredentials() {
+		OpenstackCredentials credentials = new OpenstackCredentials(authUrl,
+				username, password, tenantId);
+		return credentials;
 	}
 }
